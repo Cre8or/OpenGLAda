@@ -1,4 +1,4 @@
-with "opengl";
+with "..\opengl\opengl";
 
 library project OpenGL.Glfw is
    for Languages use ("ada");
@@ -17,6 +17,8 @@ library project OpenGL.Glfw is
    end case;
 
    GLFW_Lib := external ("GLFW_Linker_Param", Default_GLFW_Linker_Param);
+   Custom_Lib_1 := "-LC:\Users\KEPH151\Documents\lib\";
+   Custom_Lib_2 := "-LD:\GNAT\Ada\Lib\";
 
    for Source_Dirs use GLFW_Sources;
    for Object_Dir use "obj";
@@ -32,7 +34,7 @@ library project OpenGL.Glfw is
             for Linker_Options use
               (GLFW_Lib, "-Wl,-framework,Cocoa,-framework,IOKit");
          when "windows" =>
-            for Linker_Options use (GLFW_Lib, "-lwinmm", "-lgdi32");
+            for Linker_Options use (Custom_Lib_1, Custom_Lib_2, GLFW_Lib, "-lwinmm", "-lgdi32");
          when "x11" =>
 	      --  -lX11 is already set in opengl.gpr
             for Linker_Options use
