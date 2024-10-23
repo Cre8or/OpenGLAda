@@ -17,7 +17,7 @@ package Glfw.Windows is
 
    type Image is record
       Width, Height : Positive;
-      Pixels : access GL.Types.UByte_Array;
+      Pixels : GL.Types.UByte_Array_Ref;
    end record;
 
    type Image_Array is array (Positive range <>) of Image;

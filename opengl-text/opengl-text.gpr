@@ -1,5 +1,5 @@
-with "..\opengl\opengl";
-with "..\..\FreeTypeAda\freetype";
+with "../opengl/opengl";
+with "../../FreeTypeAda/freetype";
 
 library project OpenGL.Text is
    for Languages use ("ada");

@@ -14,7 +14,7 @@ library project OpenGL is
      ("windows", "x11", "quartz");
    -- has a default so that the project can be opened in GPS.
    Windowing_System : Windowing_System_Type
-     := external ("Windowing_System", "windows");
+     := external ("Windowing_System", "x11");
 
    type Mode_Type is ("debug", "release");
    Mode : Mode_Type := external ("Mode", "debug");
@@ -71,7 +71,7 @@ library project OpenGL is
    end Builder;
 
    package Compiler is
-      Base_Switches := ("-gnat12", "-gnatwa", "-gnatwl", "-gnatwe", "-gnatwV",
+      Base_Switches := ("-gnat12", "-gnatwa", "-gnatwl", "-gnatwe", "-gnatwV", "-gnatwJ",
                         "-fstack-check", "-gnaty3abcefhiklmNprt");
       case Mode is
          when "debug" =>

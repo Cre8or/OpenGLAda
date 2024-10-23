@@ -17,7 +17,7 @@ package GL.Types is
    type Byte  is new C.signed_char;
    type Short is new C.short;
    type Int   is new C.int;
-   type Long  is new C.long;
+   type Long  is new C.long_long;
 
    subtype Size is Int range 0 .. Int'Last;
    subtype Long_Size is Long range 0 .. Long'Last;
@@ -26,6 +26,7 @@ package GL.Types is
    type UByte  is new C.unsigned_char;
    type UShort is new C.unsigned_short;
    type UInt   is new C.unsigned;
+   type ULong  is new C.unsigned_long_long;
 
    -- floating point types ("Single" is used to avoid conflicts with Float)
    type Single is new C.C_float;
@@ -36,6 +37,8 @@ package GL.Types is
    type UShort_Array is array (Size range <>) of aliased UShort;
    type Int_Array    is array (Size range <>) of aliased Int;
    type UInt_Array   is array (Size range <>) of aliased UInt;
+   type Long_Array   is array (Size range <>) of aliased Long;
+   type ULong_Array  is array (Size range <>) of aliased ULong;
    type Single_Array is array (Size range <>) of aliased Single;
    type Double_Array is array (Size range <>) of aliased Double;
 
@@ -43,8 +46,20 @@ package GL.Types is
    pragma Convention (C, UShort_Array);
    pragma Convention (C, Int_Array);
    pragma Convention (C, UInt_Array);
+   pragma Convention (C, Long_Array);
+   pragma Convention (C, ULong_Array);
    pragma Convention (C, Single_Array);
    pragma Convention (C, Double_Array);
+
+   -- array access types
+   type UByte_Array_Ref  is access all UByte_Array;
+   type UShort_Array_Ref is access all UShort_Array;
+   type Int_Array_Ref    is access all Int_Array;
+   type UInt_Array_Ref   is access all UInt_Array;
+   type Long_Array_Ref   is access all Long_Array;
+   type ULong_Array_Ref  is access all ULong_Array;
+   type Single_Array_Ref is access all Single_Array;
+   type Double_Array_Ref is access all Double_Array;
 
    -- type descriptors
    type Numeric_Type is (Byte_Type, UByte_Type, Short_Type,

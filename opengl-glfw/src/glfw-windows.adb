@@ -293,6 +293,7 @@ package body Glfw.Windows is
       if Count = 0 then
          raise Operation_Exception;
       end if;
+
       API.Set_Window_Icon (Object.Handle, Count, Convert (Icons));
    end Set_Icon;
 
@@ -406,7 +407,7 @@ package body Glfw.Windows is
          Result (I) := (
             Width  => Interfaces.C.int (Icon.Width),
             Height => Interfaces.C.int (Icon.Height),
-            Pixels => Icon.Pixels
+            Pixels => Icon.Pixels.all'Address
          );
       end loop;
       return Result;
