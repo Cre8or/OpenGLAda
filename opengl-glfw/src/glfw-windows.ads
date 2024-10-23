@@ -3,6 +3,7 @@
 
 with System;
 
+with GL.Types;
 with Glfw.Input.Mouse;
 with Glfw.Input.Keys;
 with Glfw.Monitors;
@@ -13,6 +14,13 @@ package Glfw.Windows is
 
    type Window is tagged private;
    type Window_Reference is not null access all Window;
+
+   type Image is record
+      Width, Height : Positive;
+      Pixels : GL.Types.UByte_Array_Ref;
+   end record;
+
+   type Image_Array is array (Positive range <>) of Image;
 
    Creation_Error : exception;
 
@@ -59,6 +67,9 @@ package Glfw.Windows is
    procedure Set_Cursor_Mode (Object : not null access Window;
                               Mode   : Input.Mouse.Cursor_Mode);
 
+   procedure Set_Raw_Mouse_Motion (Object : not null access Window;
+                                   Value  : Boolean);
+
    procedure Get_Cursor_Pos (Object : not null access Window;
                              X, Y   : out Input.Mouse.Coordinate);
    procedure Set_Cursor_Pos (Object : not null access Window;
@@ -74,11 +85,21 @@ package Glfw.Windows is
    procedure Set_Size (Object : not null access Window;
                        Width, Height : Size);
 
+   procedure Set_Icon (Object : not null access Window;
+                       Icon : Image);
+
+   procedure Set_Icon (Object : not null access Window;
+                       Icons : Image_Array);
+
+   procedure Clear_Icon (Object : not null access Window);
+
    procedure Get_Framebuffer_Size (Object : not null access Window;
                                    Width, Height : out Size);
 
    function Visible   (Object : not null access Window) return Boolean;
    function Iconified (Object : not null access Window) return Boolean;
+   procedure Set_Iconification (Object : not null access Window; Value : in Boolean);
+
    function Focused   (Object : not null access Window) return Boolean;
 
    function Should_Close (Object : not null access Window) return Boolean;
@@ -127,10 +148,12 @@ package Glfw.Windows is
                                 Char   : Wide_Wide_Character) is null;
 
 private
+
    type Window is new Ada.Finalization.Controlled with record
       Handle : System.Address := System.Null_Address;
    end record;
 
    function Window_Ptr (Raw : System.Address)
                         return not null access Window'Class;
+
 end Glfw.Windows;

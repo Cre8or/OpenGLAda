@@ -1,4 +1,4 @@
-with "opengl";
+with "../opengl/opengl";
 
 library project OpenGL.Glfw is
    for Languages use ("ada");

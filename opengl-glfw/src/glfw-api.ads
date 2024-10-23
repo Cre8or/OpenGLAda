@@ -48,6 +48,15 @@ private package Glfw.API is
    end record;
    pragma Convention (C, Raw_Gamma_Ramp);
 
+	type Image_Data is record
+		Width, Height : Interfaces.C.int;
+		Pixels        : System.Address;
+	end record;
+	pragma Convention (C, Image_Data);
+
+   type Image_Data_Array is array (Positive range <>) of aliased Image_Data;
+   pragma Convention (C, Image_Data_Array);
+
    -----------------------------------------------------------------------------
    -- Callbacks
    -----------------------------------------------------------------------------
@@ -269,6 +278,12 @@ private package Glfw.API is
    pragma Import (Convention => C, Entity => Set_Window_Size,
                   External_Name => "glfwSetWindowSize");
 
+   procedure Set_Window_Icon (Window : System.Address;
+                              Count  : Interfaces.C.int;
+                              Images : Image_Data_Array);
+   pragma Import (Convention => C, Entity => Set_Window_Icon,
+                  External_Name => "glfwSetWindowIcon");
+
    procedure Get_Framebuffer_Size (Window : System.Address;
                                    Width, Height : out Size);
    pragma Import (Convention => C, Entity => Get_Framebuffer_Size,
@@ -372,9 +387,9 @@ private package Glfw.API is
    -----------------------------------------------------------------------------
 
    function Get_Input_Mode (Window : System.Address;
-                            Mode : Enums.Input_Toggle) return Bool;
+                            Mode : Enums.Bool_Input_Toggle) return Bool;
    function Get_Input_Mode (Window : System.Address;
-                            Mode : Enums.Input_Toggle)
+                            Mode : Enums.Cursor_Input_Toggle)
                             return Input.Mouse.Cursor_Mode;
    pragma Import (Convention => C, Entity => Get_Input_Mode,
                   External_Name => "glfwGetInputMode");
@@ -383,10 +398,17 @@ private package Glfw.API is
                              Mode   : Input.Sticky_Toggle;
                              Value  : Bool);
    procedure Set_Input_Mode (Window : System.Address;
-                             Mode   : Enums.Input_Toggle;
+                             Mode   : Enums.Cursor_Input_Toggle;
                              Value  : Input.Mouse.Cursor_Mode);
+   procedure Set_Input_Mode (Window : System.Address;
+                             Mode   : Enums.Bool_Input_Toggle;
+                             Value  : Bool);
    pragma Import (Convention => C, Entity => Set_Input_Mode,
                   External_Name => "glfwSetInputMode");
+
+   function Raw_Mouse_Motion_Supported return Bool;
+   pragma Import (Convention => C, Entity => Raw_Mouse_Motion_Supported,
+                  External_Name => "glfwRawMouseMotionSupported");
 
    function Get_Key (Window : System.Address; Key : Input.Keys.Key)
                      return Input.Button_State;

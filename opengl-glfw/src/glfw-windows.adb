@@ -4,13 +4,14 @@
 with Ada.Unchecked_Conversion;
 with System.Address_To_Access_Conversions;
 
-with GL;
 with Glfw.API;
 with Glfw.Enums;
 with Glfw.Windows.Context;
 
 package body Glfw.Windows is
    package Conv is new System.Address_To_Access_Conversions (Window'Class);
+
+   function Convert (Icons : Image_Array) return API.Image_Data_Array;
 
    procedure Raw_Position_Callback (Raw  : System.Address;
                                     X, Y : Interfaces.C.int);
@@ -246,6 +247,12 @@ package body Glfw.Windows is
       API.Set_Cursor_Pos (Object.Handle, X, Y);
    end Set_Cursor_Pos;
 
+   procedure Set_Raw_Mouse_Motion (Object : not null access Window;
+                                   Value  : Boolean) is
+   begin
+      API.Set_Input_Mode (Object.Handle, Enums.Raw_Mouse_Motion, Bool (Value));
+   end Set_Raw_Mouse_Motion;
+
    procedure Get_Position (Object : not null access Window;
                            X, Y : out Coordinate) is
    begin
@@ -270,6 +277,31 @@ package body Glfw.Windows is
       API.Set_Window_Size (Object.Handle, Width, Height);
    end Set_Size;
 
+   procedure Set_Icon (Object : not null access Window;
+                       Icon : Image) is
+   begin
+      Object.Set_Icon (
+         Image_Array'(1 .. 1 => Icon)
+      );
+   end Set_Icon;
+
+   procedure Set_Icon (Object : not null access Window;
+                       Icons : Image_Array) is
+      use type Size;
+      Count : constant Size := Icons'Length;
+   begin
+      if Count = 0 then
+         raise Operation_Exception;
+      end if;
+
+      API.Set_Window_Icon (Object.Handle, Count, Convert (Icons));
+   end Set_Icon;
+
+   procedure Clear_Icon (Object : not null access Window) is
+   begin
+      API.Set_Window_Icon (Object.Handle, 0, (1 .. 0 => <>));
+   end Clear_Icon;
+
    procedure Get_Framebuffer_Size (Object : not null access Window;
                                    Width, Height : out Size) is
    begin
@@ -287,6 +319,15 @@ package body Glfw.Windows is
       return Boolean
         (Bool'(API.Get_Window_Attrib (Object.Handle, Enums.Iconified)));
    end Iconified;
+
+   procedure Set_Iconification (Object : not null access Window; Value : in Boolean) is
+   begin
+      if Value then
+         API.Iconify_Window (Object.Handle);
+      else
+         API.Restore_Window (Object.Handle);
+      end if;
+   end Set_Iconification;
 
    function Focused (Object : not null access Window) return Boolean is
    begin
@@ -345,8 +386,6 @@ package body Glfw.Windows is
       end case;
    end Disable_Callback;
 
-
-
    procedure Get_OpenGL_Version (Object : not null access Window;
                                  Major, Minor, Revision : out Natural) is
       Value : Interfaces.C.int;
@@ -358,5 +397,20 @@ package body Glfw.Windows is
       Value := API.Get_Window_Attrib (Object.Handle, Enums.Context_Revision);
       Revision := Natural (Value);
    end Get_OpenGL_Version;
+
+   function Convert (Icons : Image_Array) return API.Image_Data_Array is
+      Icon   : Image;
+      Result : API.Image_Data_Array (Icons'Range);
+   begin
+      for I in Icons'Range loop
+         Icon := Icons (I);
+         Result (I) := (
+            Width  => Interfaces.C.int (Icon.Width),
+            Height => Interfaces.C.int (Icon.Height),
+            Pixels => Icon.Pixels.all'Address
+         );
+      end loop;
+      return Result;
+   end Convert;
 
 end Glfw.Windows;
